@@ -16,14 +16,19 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $this->faker = \Faker\Factory::create('en_US');
    return [
-        'name' => fake()->words(3, true), // اسم منتج مكون من 3 كلمات
-        'description' => fake()->paragraph(), // وصف عشوائي
-        'price' => fake()->randomFloat(2, 10, 1000), // سعر بين 10 و 1000
-        'stock' => fake()->numberBetween(0, 100), // مخزون بين 0 و 100
-        'image' => fake()->imageUrl(640, 480, 'products', true), // رابط صورة وهمي
-        // إذا كان لديك تصنيفات لاحقاً، يمكنك ربطها بـ category_id
+     
+
+         'name' => fake('en_US')->words(3, true),             // اسم منتج مكون من 3 كلمات
+        'description' => fake('en_US')->paragraph(),         //وصف عشواءي
+        'price' => fake()->randomFloat(2, 10, 1000),                   //سعر بين 10 و 1000
+        'stock' => fake()->numberBetween(0, 100),                     //مخزون بين 0 و 100
+        'image' => fake()->imageUrl(640, 480, 'products', true),            // رابط صورة وهمي
+
+              // إذا كان لديك تصنيفات لاحقاً، يمكنك ربطها بـ category_id
         // 'category_id' => Category::factory(), // يفترض وجود CategoryFactory
+        
     ];
 
     

@@ -3,90 +3,53 @@
 @section('title', 'Manage Products')
 
 @section('content')
-    @php
-        // بيانات وهمية (تظهر فقط إذا لم يتم تمرير بيانات حقيقية)
-        $dummyProducts = [
-            (object)[
-                'id' => 1,
-                'name' => 'Sample Product 1',
-                'price' => 29.99,
-                'category' => (object)['name' => 'Electronics'],
-                'is_featured' => true,
-                'image_url' => 'https://via.placeholder.com/50'
-            ],
-            (object)[
-                'id' => 2,
-                'name' => 'Sample Product 2',
-                'price' => 49.99,
-                'category' => (object)['name' => 'Clothing'],
-                'is_featured' => false,
-                'image_url' => 'https://via.placeholder.com/50'
-            ],
-            (object)[
-                'id' => 3,
-                'name' => 'Sample Product 3',
-                'price' => 99.99,
-                'category' => (object)['name' => 'Home & Garden'],
-                'is_featured' => true,
-                'image_url' => 'https://via.placeholder.com/50'
-            ],
-        ];
-        
-        $dummyCategories = [
-            (object)['id' => 1, 'name' => 'Electronics'],
-            (object)['id' => 2, 'name' => 'Clothing'],
-            (object)['id' => 3, 'name' => 'Home & Garden'],
-            (object)['id' => 4, 'name' => 'Books'],
-            (object)['id' => 5, 'name' => 'Toys'],
-        ];
-
-        $products = $products ?? $dummyProducts;
-        $categories = $categories ?? $dummyCategories;
-    @endphp
-
     <div class="container">
         <h1>Manage Products</h1>
         <button class="btn btn-primary" onclick="openModal('create')">Add New Product</button>
 
+       
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Price</th>
-                    <th>Category</th>
+                    <th>Stock</th>
                     <th>Featured</th>
                     <th>Image</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($products as $product)
+                @forelse($products as $product)
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>{{ $product->name }}</td>
                     <td>${{ number_format($product->price, 2) }}</td>
-                    <td>{{ $product->category->name ?? 'N/A' }}</td>
+                    <td>{{ $product->stock }}</td>
                     <td>{{ $product->is_featured ? 'Yes' : 'No' }}</td>
-                    <td><img src="{{ $product->image_url }}" alt="{{ $product->name }}" width="50"></td>
+                    <td>
+                        @if($product->image)
+                            <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}" width="50">
+                        @else
+                            <img src="https://via.placeholder.com/50" alt="placeholder">
+                        @endif
+                    </td>
                     <td>
                         <button class="btn btn-sm btn-edit" onclick="openModal('edit', {{ $product->id }})">Edit</button>
                         <button class="btn btn-sm btn-delete" onclick="confirmDelete({{ $product->id }})">Delete</button>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="7">No products found.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
 
-        <!-- Pagination -->
         <div class="pagination">
-            <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li class="active"><span>1</span></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">&raquo;</a></li>
-            </ul>
+            {{ $products->links() }}
         </div>
     </div>
 
@@ -95,44 +58,39 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle">Add Product</h2>
-            <form id="productForm" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault(); alert('Form submission disabled in prototype. In production, this would save the product.');">
+            <form id="productForm" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="_method" id="methodField" value="POST">
                 <input type="hidden" name="product_id" id="productId">
 
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" name="name" id="name" required maxlength="255" value="Sample Product">
+                    <input type="text" name="name" id="name" required maxlength="255" class="form-control">
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea name="description" id="description" rows="4">This is a sample product description for the prototype.</textarea>
+                    <textarea name="description" id="description" rows="4" class="form-control"></textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="price">Price</label>
-                    <input type="number" name="price" id="price" step="0.01" min="0" required value="29.99">
+                    <input type="number" name="price" id="price" step="0.01" min="0" required class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label for="category_id">Category</label>
-                    <select name="category_id" id="category_id">
-                        <option value="">Select Category</option>
-                        @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
+                    <label for="stock">Stock</label>
+                    <input type="number" name="stock" id="stock" min="0" value="0" class="form-control">
                 </div>
 
                 <div class="form-group">
                     <label for="image">Image</label>
-                    <input type="file" name="image" id="image" accept="image/*">
+                    <input type="file" name="image" id="image" accept="image/*" class="form-control-file">
                     <div id="imagePreview" style="margin-top: 10px;"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="is_featured">
+                    <label>
                         <input type="checkbox" name="is_featured" id="is_featured" value="1"> Featured
                     </label>
                 </div>
@@ -151,7 +109,7 @@
             <span class="close" onclick="closeDeleteModal()">&times;</span>
             <h2>Confirm Delete</h2>
             <p>Are you sure you want to delete this product?</p>
-            <form id="deleteForm" onsubmit="event.preventDefault(); alert('Delete disabled in prototype. In production, this would delete the product.'); closeDeleteModal();">
+            <form id="deleteForm" method="POST" style="display:inline;">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">Delete</button>
@@ -159,4 +117,90 @@
             </form>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function openModal(action, productId = null) {
+            const modal = document.getElementById('productModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('productForm');
+            const methodField = document.getElementById('methodField');
+            const productIdField = document.getElementById('productId');
+
+            if (action === 'create') {
+                modalTitle.innerText = 'Add New Product';
+                form.action = "{{ route('products.store') }}";
+                methodField.value = 'POST';
+                productIdField.value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('price').value = '';
+                document.getElementById('stock').value = 0;
+                document.getElementById('is_featured').checked = false;
+                document.getElementById('imagePreview').innerHTML = '';
+            } else if (action === 'edit' && productId) {
+                modalTitle.innerText = 'Edit Product';
+                form.action = `/admin/products/${productId}`;
+                methodField.value = 'PUT';
+                productIdField.value = productId;
+
+                fetch(`/admin/products/${productId}/edit-data`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('name').value = data.name;
+                        document.getElementById('description').value = data.description;
+                        document.getElementById('price').value = data.price;
+                        document.getElementById('stock').value = data.stock;
+                        document.getElementById('is_featured').checked = data.is_featured == 1;
+                        if (data.image) {
+                            document.getElementById('imagePreview').innerHTML = `<img src="/storage/${data.image}" width="50">`;
+                        }
+                    });
+            }
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function confirmDelete(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/products/${productId}`;
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+                
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target == deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        }
+    </script>
+    @endpush
 @endsection

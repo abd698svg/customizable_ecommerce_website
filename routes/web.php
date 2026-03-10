@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 });*/
 Route::prefix('admin')->group(function () {
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
+
 });
+Route::get('/products/{product}/edit-data', [App\Http\Controllers\Admin\ProductController::class, 'editData'])->name('products.edit-data');
 
 

@@ -15,6 +15,7 @@ public function up()
         $table->id(); // Primary key
         $table->string('name'); // اسم المنتج
         $table->text('description')->nullable(); // وصف (يمكن أن يكون فارغاً)
+        $table->boolean('is_featured')->default(false);
         $table->decimal('price', 10, 2); // السعر (10 أرقام، 2 بعد الفاصلة)
         $table->integer('stock')->default(0); // الكمية في المخزون
       //  $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null'); // ربط مع التصنيفات (سننشئها لاحقاً)

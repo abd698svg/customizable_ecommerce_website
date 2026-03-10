@@ -49,5 +49,6 @@
 
     <script src="{{ asset('js/admin.js') }}"></script>
     <script src="{{ asset('js/admin-products.js') }}"></script>
+    @stack('scripts')
 </body>
 </html>

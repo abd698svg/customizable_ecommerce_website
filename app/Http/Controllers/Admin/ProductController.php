@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-       $products = Product::all(); // جلب المنتجات
+       $products = Product::paginate(10); // جلب المنتجات
       // $categories = Category::all(); // جلب كل التصنيفات للمودال    
         return view('admin.products.index', compact('products'));
     }
@@ -37,6 +37,8 @@ class ProductController extends Controller
           'name' => 'required|string|max:255',
           'description' => 'nullable|string',
           'price' => 'required|numeric|min:0',
+          'stock' => 'required|integer|min:0',   // <-- أضف هذا السطر
+
          // 'category_id' => 'nullable|exists:categories,id',
           'image' => 'nullable|image|max:2048',
           'is_featured' => 'nullable|boolean'
@@ -111,4 +113,8 @@ public function update(Request $request, Product $product)
       return redirect()->route('products.index')
                        ->with('success', 'تم حذف المنتج بنجاح');
      }
+        public function editData(Product $product)
+    {
+       return response()->json($product);
+    }
 }
