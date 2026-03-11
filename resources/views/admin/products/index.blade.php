@@ -153,8 +153,12 @@
                         document.getElementById('stock').value = data.stock;
                         document.getElementById('is_featured').checked = data.is_featured == 1;
                         if (data.image) {
-                            document.getElementById('imagePreview').innerHTML = `<img src="/storage/${data.image}" width="50">`;
-                        }
+    document.getElementById('imagePreview').innerHTML = `<img src="/storage/${data.image}" width="100">`;
+} else {
+    document.getElementById('imagePreview').innerHTML = '';
+}
+                        
+                        
                     });
             }
             modal.style.display = 'block';

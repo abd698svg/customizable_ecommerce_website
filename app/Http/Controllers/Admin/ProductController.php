@@ -84,7 +84,7 @@ public function update(Request $request, Product $product)
            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
            'is_featured' => 'nullable|boolean'
         ]);
-
+            $validated['is_featured'] = $request->has('is_featured') ? 1 : 0;
          if ($request->hasFile('image')) {
            if ($product->image)
               {
