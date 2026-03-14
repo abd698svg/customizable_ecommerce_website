@@ -14,47 +14,34 @@ class AdminLoginController extends Controller
     // Display the admin login view.
     public function create()
     {
-        return view('/welcome'); 
+        return view('/admin/login'); 
     }
 
     // Handle an incoming admin authentication request.
     public function store(LoginRequest $request)
     {
-        // Validate credentials
+        // Validate input
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|string',
         ]);
 
-        // Find the user by email
-        $user = User::where('email', $request->email)->first();
+        // Authenticate the user using the default 'web' guard
+        $request->authenticate();
+        
+        // Get the authenticated user
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-        // Check if user exists and password is correct
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
+        // Check if the user is an admin (using a role column)
+        if (! $user->isAdmin()) {   // You'll define this method on the User model
+            // If not admin: log them out immediately
+            Auth::logout();
         }
 
-        // Check if user is admin
-        if (!$user->isAdmin()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Admin privileges required'
-            ], 403);
-        }
-
-        // Return success with user data (no session!)
+        // Return success response
         return response()->json([
-            'success' => true,
             'message' => 'Login successful',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role
-            ]
-        ]);
+        ], 200);
     }
 }
