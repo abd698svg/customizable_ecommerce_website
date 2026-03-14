@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class AdminLoginController extends Controller
     // Display the admin login view.
     public function create()
     {
-        return view('/admin_LOGIN/adminLogin'); 
+        return view('/welcome'); 
     }
 
     // Handle an incoming admin authentication request.

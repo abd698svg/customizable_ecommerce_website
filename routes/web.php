@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\AdminLogin;
-use App\Http\Controllers\AdminLoginController;
+use App\Http\Controllers\Admin\AdminLoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/admin/login', [AdminLoginController::class, 'create'])
@@ -11,4 +10,3 @@ Route::get('/admin/login', [AdminLoginController::class, 'create'])
 Route::post('/admin/login', [AdminLoginController::class, 'store'])
 ->name('admin.login')
 ->middleware('AdminProtectMiddleware');
-
