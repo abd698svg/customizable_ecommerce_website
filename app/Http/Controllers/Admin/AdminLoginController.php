@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -18,30 +17,33 @@ class AdminLoginController extends Controller
     }
 
     // Handle an incoming admin authentication request.
-    public function store(LoginRequest $request)
+    public function store(Request $request)
     {
-        // Validate input
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
+         $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
         ]);
 
-        // Authenticate the user using the default 'web' guard
-        $request->authenticate();
-        
-        // Get the authenticated user
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        // Check if the user is an admin (using a role column)
-        if (! $user->isAdmin()) {   // You'll define this method on the User model
-            // If not admin: log them out immediately
-            Auth::logout();
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            $request->session()->regenerate();
+            return redirect()->intended('welcome');
         }
 
-        // Return success response
-        return response()->json([
-            'message' => 'Login successful',
-        ], 200);
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    }
+
+    public function createWelcome()
+    {
+        return view('/welcome'); 
     }
 }

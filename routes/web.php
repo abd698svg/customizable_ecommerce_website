@@ -7,5 +7,7 @@ Route::get('/admin/login', [AdminLoginController::class, 'create'])
 ->name('admin.login.form');
 
 Route::post('/admin/login', [AdminLoginController::class, 'store'])
-->name('admin.login')
+->name('admin.login');
+
+Route::get('/welcome', [AdminLoginController::class, 'createWelcome'])
 ->middleware(['AdminProtectMiddleware']);
