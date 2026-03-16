@@ -26,7 +26,7 @@ class AdminLoginController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('welcome');
+            return redirect()->intended('admin/products');
         }
 
         return back()->withErrors([
@@ -39,7 +39,7 @@ class AdminLoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect('/admin/login');
     }
 
     public function createWelcome()
