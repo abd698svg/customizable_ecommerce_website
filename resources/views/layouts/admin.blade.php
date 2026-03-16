@@ -30,7 +30,12 @@
             <header class="top-bar">
                 <div class="user-info">
                     <span>Welcome, Admin</span>
-                    <a href="#" onclick="event.preventDefault(); alert('Logout would happen here.');">Logout</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer;">
+                        Logout
+                        </button>
+                    </form>
                 </div>
             </header>
 
