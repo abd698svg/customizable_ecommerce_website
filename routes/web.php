@@ -16,3 +16,14 @@ Route::prefix('admin')->middleware(['AdminProtectMiddleware'])->group(function (
     Route::get('/products/{product}/edit-data', [App\Http\Controllers\Admin\ProductController::class, 'editData'])->name('products.edit-data');
 });
 
+/*
+GET `/register` → `AuthController@showRegisterForm` (name: `register`)      
+POST `/register` → `AuthController@register`      
+GET `/login` → `AuthController@showLoginForm` (name: `login`)      
+POST `/login` → `AuthController@login`      
+POST `/logout` → `AuthController@logout` (name: `logout`)      
+GET `/forgot-password` → `AuthController@showForgotForm` (name: `password.request`)      
+POST `/forgot-password` → `AuthController@sendResetLink` (name: `password.email`)      
+GET `/reset-password/{token}` → `AuthController@showResetForm` (name: `password.reset`)      
+POST `/reset-password` → `AuthController@reset` (name: `password.update`)
+*/
