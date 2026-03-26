@@ -13,6 +13,6 @@ Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 
 Route::prefix('admin')->middleware(['AdminProtectMiddleware'])->group(function () {
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
-    Route::get('/products/{product}/edit-data', [App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.edit-data');
+    Route::get('/products/{product}/edit-data', [App\Http\Controllers\Admin\ProductController::class, 'editData'])->name('products.edit-data');
 });
 
